@@ -1,38 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Apocalypse Browser 1.12.2</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Apocalypse Browser 1.12.2</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
 <div id="startMenu">
   <h1>Apocalypse Browser</h1>
   <button id="startBtn">Start Game</button>
 </div>
 
-<div id="gameUI">
-  <div id="stats">
-    <span id="health">Health: 100</span>
-    <span id="food">Food: 100</span>
-    <span id="energy">Energy: 100</span>
-  </div>
-  <div id="hotbar">
-    <div class="slot selected" data-slot="0">Knife</div>
-    <div class="slot" data-slot="1">Pistol</div>
-    <div class="slot" data-slot="2">AR</div>
-    <div class="slot" data-slot="3">SMG</div>
-    <div class="slot" data-slot="4">Sniper</div>
-  </div>
+<div id="gameUI" style="display:none;">
   <div id="crosshair">+</div>
-  <div id="chatBox">
-    <div id="messages"></div>
-    <input id="chatInput" placeholder="Type message..." />
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/PointerLockControls.js"></script>
 <script src="main.js"></script>
+
 </body>
 </html>
+
