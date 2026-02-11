@@ -1,75 +1,75 @@
-// Use your live Render WebSocket URL
-const ws = new WebSocket(`wss://apocalypse-broswer.onrender.com`);
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155/build/three.module.js';
 
-ws.onopen = () => console.log("Connected to server!");
-ws.onmessage = e => {
-    const msgDiv = document.getElementById('messages');
-    msgDiv.innerHTML += e.data + "<br>";
-};
-ws.onclose = () => {
-    console.log("Disconnected from server. Reconnecting in 2s...");
-    setTimeout(() => {
-        location.reload(); // simple reconnect
-    }, 2000);
-};
-
-// Chat send
-const chatInput = document.getElementById('chatInput');
-chatInput.addEventListener('keypress', e => {
-    if (e.key === 'Enter' && ws.readyState === WebSocket.OPEN) {
-        ws.send(chatInput.value);
-        chatInput.value = '';
-    }
-});
-
-// Three.js 3D setup
-const canvas = document.getElementById('gameCanvas');
+// Canvas & scene
+const canvas = document.getElementById("gameCanvas");
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
+
+// Camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 10);
+
+// Renderer
 const renderer = new THREE.WebGLRenderer({ canvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Lighting
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(50, 100, 50);
-scene.add(light);
-
 // Ground
+const groundGeo = new THREE.PlaneGeometry(200, 200);
 const groundMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
-const groundGeo = new THREE.PlaneGeometry(1000, 1000);
 const ground = new THREE.Mesh(groundGeo, groundMat);
 ground.rotation.x = -Math.PI/2;
 scene.add(ground);
 
+// Lights
+const sun = new THREE.DirectionalLight(0xffffff, 1);
+sun.position.set(50, 100, 50);
+scene.add(sun);
+
 // Player
-const player = new THREE.Mesh(
-    new THREE.BoxGeometry(1,2,1),
-    new THREE.MeshStandardMaterial({ color: 0x0000ff })
-);
-player.position.set(0,1,0);
-scene.add(player);
-
-// Controls
+const player = { x:0, y:0, z:0, health:100, food:100, water:100 };
+const speed = 0.2;
 const keys = {};
-document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
 
-// Main animation loop
+// Listen to keys
+window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+// Mouse lock
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+canvas.onclick = () => canvas.requestPointerLock();
+
+// Mouse look
+let yaw = 0, pitch = 0;
+document.addEventListener('mousemove', e => {
+    if(document.pointerLockElement === canvas) {
+        yaw -= e.movementX * 0.002;
+        pitch -= e.movementY * 0.002;
+        pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
+    }
+});
+
+// WebSocket for multiplayer (fixed for Render)
+const ws = new WebSocket("wss://apocalypse-broswer.onrender.com");
+ws.onopen = () => console.log("Connected to server!");
+ws.onmessage = e => console.log("Received:", e.data);
+ws.onclose = () => console.log("Disconnected from server");
+
+// Basic animation loop
 function animate() {
     requestAnimationFrame(animate);
 
-    // Movement: W forward, S backward, A left, D right
-    const speed = 0.3;
-    if (keys['w']) player.position.z -= speed;
-    if (keys['s']) player.position.z += speed;
-    if (keys['a']) player.position.x -= speed;
-    if (keys['d']) player.position.x += speed;
+    // Movement: W forward, S back, A left, D right
+    if(keys['w']) player.z -= speed * Math.cos(yaw);
+    if(keys['s']) player.z += speed * Math.cos(yaw);
+    if(keys['a']) player.x -= speed * Math.sin(yaw);
+    if(keys['d']) player.x += speed * Math.sin(yaw);
 
-    // Camera follows player
-    camera.position.set(player.position.x, player.position.y + 5, player.position.z + 10);
-    camera.lookAt(player.position);
+    camera.position.set(player.x, 5, player.z + 10);
+    camera.lookAt(player.x, 0, player.z);
 
     renderer.render(scene, camera);
 }
 animate();
+
+
 
