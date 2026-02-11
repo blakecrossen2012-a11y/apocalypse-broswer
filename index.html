@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Apocalypse Browser 1.12.2</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Apocalypse Browser</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="mainMenu">
-  <h1>Apocalypse Browser</h1>
-  <button id="startBtn">Start Game</button>
-</div>
-
-<canvas id="gameCanvas"></canvas>
-<div id="ui">
-  <div id="crosshair">+</div>
-  <div id="stats">
-    <div>Health: <span id="health">100</span></div>
-    <div>Food: <span id="food">100</span></div>
-    <div>Energy: <span id="energy">100</span></div>
-  </div>
-  <div id="hotbar"></div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-<script src="main.js"></script>
+    <canvas id="gameCanvas"></canvas>
+    <div id="menu">
+        <h1>Apocalypse Rising Browser</h1>
+        <button id="startBtn">Start Game</button>
+    </div>
+    <div id="hud">
+        <div id="hotbar"></div>
+        <div id="stats">HP: 100 | Food: 100 | Water: 100</div>
+        <div id="chat">
+            <div id="messages"></div>
+            <input id="chatInput" placeholder="Type message...">
+        </div>
+        <div id="map" style="display:none;"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
