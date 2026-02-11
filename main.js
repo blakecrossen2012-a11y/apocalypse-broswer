@@ -1,75 +1,43 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.155/build/three.module.js';
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Canvas & scene
-const canvas = document.getElementById("gameCanvas");
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
+const ws = new WebSocket(`wss://${window.location.host}`); // Use secure WS on Render
 
-// Camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5, 10);
+const chatDiv = document.getElementById('chat');
+const input = document.getElementById('input');
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas });
-renderer.setSize(window.innerWidth, window.innerHeight);
+ws.onopen = () => log('Connected to server!');
+ws.onmessage = e => log(`Received: ${e.data}`);
+ws.onclose = () => log('Disconnected from server');
 
-// Ground
-const groundGeo = new THREE.PlaneGeometry(200, 200);
-const groundMat = new THREE.MeshStandardMaterial({ color: 0x228B22 });
-const ground = new THREE.Mesh(groundGeo, groundMat);
-ground.rotation.x = -Math.PI/2;
-scene.add(ground);
-
-// Lights
-const sun = new THREE.DirectionalLight(0xffffff, 1);
-sun.position.set(50, 100, 50);
-scene.add(sun);
-
-// Player
-const player = { x:0, y:0, z:0, health:100, food:100, water:100 };
-const speed = 0.2;
-const keys = {};
-
-// Listen to keys
-window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-// Mouse lock
-canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-canvas.onclick = () => canvas.requestPointerLock();
-
-// Mouse look
-let yaw = 0, pitch = 0;
-document.addEventListener('mousemove', e => {
-    if(document.pointerLockElement === canvas) {
-        yaw -= e.movementX * 0.002;
-        pitch -= e.movementY * 0.002;
-        pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
+input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && input.value.trim() !== '') {
+        const msg = input.value;
+        ws.send(msg);
+        input.value = '';
     }
 });
 
-// WebSocket for multiplayer (fixed for Render)
-const ws = new WebSocket("wss://apocalypse-broswer.onrender.com");
-ws.onopen = () => console.log("Connected to server!");
-ws.onmessage = e => console.log("Received:", e.data);
-ws.onclose = () => console.log("Disconnected from server");
-
-// Basic animation loop
-function animate() {
-    requestAnimationFrame(animate);
-
-    // Movement: W forward, S back, A left, D right
-    if(keys['w']) player.z -= speed * Math.cos(yaw);
-    if(keys['s']) player.z += speed * Math.cos(yaw);
-    if(keys['a']) player.x -= speed * Math.sin(yaw);
-    if(keys['d']) player.x += speed * Math.sin(yaw);
-
-    camera.position.set(player.x, 5, player.z + 10);
-    camera.lookAt(player.x, 0, player.z);
-
-    renderer.render(scene, camera);
+function log(msg) {
+    const div = document.createElement('div');
+    div.textContent = msg;
+    chatDiv.appendChild(div);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
 }
-animate();
+
+// Simple test render loop
+function gameLoop() {
+    ctx.fillStyle = '#7ec850';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+
 
 
 
