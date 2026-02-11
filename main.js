@@ -68,14 +68,11 @@ function spawnZombie(x,z){
 for(let i=-50;i<50;i+=20){ spawnZombie(i,20); }
 
 // === WebSocket Multiplayer ===
-let ws = new WebSocket("ws://localhost:8080");
-ws.onopen=()=>console.log("Connected to server!");
-ws.onmessage=e=>{
-  let data = JSON.parse(e.data);
-  let msg = document.createElement("div");
-  msg.textContent = `${data.name}: ${data.message}`;
-  document.getElementById("messages").appendChild(msg);
-};
+const ws = new WebSocket(
+  window.location.protocol === "https:"
+    ? "wss://" + window.location.host
+    : "ws://" + window.location.host
+);
 
 // === Chat ===
 document.getElementById("chatInput").addEventListener("keypress",e=>{
@@ -92,6 +89,7 @@ function animate(){
   renderer.render(scene,camera);
 }
 animate();
+
 
 
 
