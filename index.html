@@ -2,25 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Apocalypse Browser</title>
+    <title>Apocalypse Browser 1.12.2</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div id="menu">
-        <h1>Apocalypse Rising Browser</h1>
-        <button id="startBtn">Start Game</button>
-    </div>
+    
+    <!-- HUD -->
     <div id="hud">
+        <div id="health">Health: 100</div>
+        <div id="food">Food: 100</div>
+        <div id="water">Water: 100</div>
         <div id="hotbar"></div>
-        <div id="stats">HP: 100 | Food: 100 | Water: 100</div>
-        <div id="chat">
-            <div id="messages"></div>
-            <input id="chatInput" placeholder="Type message...">
+        <div id="chatContainer">
+            <div id="chatLog"></div>
+            <input id="chatInput" placeholder="Type message..." />
         </div>
-        <div id="map" style="display:none;"></div>
+        <div id="mapOverview" hidden></div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+
+    <script src="main.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apocalypse Browser 1.12.2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- HUD -->
+    <div id="hud">
+        <div id="health">Health: 100</div>
+        <div id="food">Food: 100</div>
+        <div id="water">Water: 100</div>
+        <div id="hotbar"></div>
+        <div id="chatContainer">
+            <div id="chatLog"></div>
+            <input id="chatInput" placeholder="Type message..." />
+        </div>
+        <div id="mapOverview" hidden></div>
+    </div>
+
     <script src="main.js"></script>
 </body>
 </html>
