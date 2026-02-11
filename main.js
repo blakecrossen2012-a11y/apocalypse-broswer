@@ -1,96 +1,135 @@
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js";
-import { PointerLockControls } from "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/PointerLockControls.js";
+// main.js
 
-// === Scene Setup ===
-let scene = new THREE.Scene();
+// ===== BASIC SETUP =====
+const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb);
 
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-let renderer = new THREE.WebGLRenderer({antialias:true});
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  2000
+);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// === Terrain ===
-let terrain = new THREE.Mesh(new THREE.PlaneGeometry(500,500,50,50), new THREE.MeshPhongMaterial({color:0x228B22}));
-terrain.rotation.x = -Math.PI/2;
-scene.add(terrain);
-
-// === Light ===
-let light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(50,100,50);
+// ===== LIGHTING =====
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(50, 100, 50);
 scene.add(light);
 
-// === Controls ===
-let controls = new PointerLockControls(camera, document.body);
-document.getElementById("startBtn").onclick = () => {
-  controls.lock();
-  document.getElementById("startMenu").style.display="none";
-  document.getElementById("gameUI").style.display="block";
+// ===== TERRAIN =====
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(1000, 1000),
+  new THREE.MeshLambertMaterial({ color: 0x228b22 })
+);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
+
+// ===== BUILDINGS =====
+function spawnBuilding(x, z, color) {
+  const building = new THREE.Mesh(
+    new THREE.BoxGeometry(30, 40, 30),
+    new THREE.MeshLambertMaterial({ color })
+  );
+  building.position.set(x, 20, z);
+  scene.add(building);
+}
+
+spawnBuilding(100, 100, 0xaa4444);
+spawnBuilding(-120, 50, 0x4444aa);
+spawnBuilding(60, -140, 0xaaaa44);
+
+// ===== PLAYER =====
+const player = {
+  x: 0,
+  y: 5,
+  z: 0,
+  speed: 1
 };
 
-// === Player ===
-let player = {x:0,z:0,y:2,health:100,food:100,energy:100,speed:0.5};
+camera.position.set(player.x, player.y, player.z);
 
-// === Movement ===
-let keys={};
-document.addEventListener("keydown",e=>keys[e.key.toLowerCase()]=true);
-document.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+// ===== POINTER LOCK =====
+const controls = new THREE.PointerLockControls(camera, document.body);
 
-function movePlayer(){
-  if(keys["w"]){ player.z -= player.speed; }
-  if(keys["s"]){ player.z += player.speed; }
-  if(keys["a"]){ player.x -= player.speed; }
-  if(keys["d"]){ player.x += player.speed; }
-  camera.position.set(player.x,player.y,player.z);
+document.getElementById("startBtn").addEventListener("click", () => {
+  controls.lock();
+});
+
+controls.addEventListener("lock", () => {
+  document.getElementById("startMenu").style.display = "none";
+  document.getElementById("gameUI").style.display = "block";
+});
+
+controls.addEventListener("unlock", () => {
+  document.getElementById("startMenu").style.display = "flex";
+  document.getElementById("gameUI").style.display = "none";
+});
+
+// ===== MOVEMENT =====
+const keys = {};
+document.addEventListener("keydown", (e) => {
+  keys[e.key.toLowerCase()] = true;
+});
+document.addEventListener("keyup", (e) => {
+  keys[e.key.toLowerCase()] = false;
+});
+
+function movePlayer() {
+  const direction = new THREE.Vector3();
+  camera.getWorldDirection(direction);
+
+  const right = new THREE.Vector3();
+  right.crossVectors(direction, new THREE.Vector3(0, 1, 0));
+
+  if (keys["w"]) {
+    player.x += direction.x * player.speed;
+    player.z += direction.z * player.speed;
+  }
+  if (keys["s"]) {
+    player.x -= direction.x * player.speed;
+    player.z -= direction.z * player.speed;
+  }
+  if (keys["a"]) {
+    player.x -= right.x * player.speed;
+    player.z -= right.z * player.speed;
+  }
+  if (keys["d"]) {
+    player.x += right.x * player.speed;
+    player.z += right.z * player.speed;
+  }
+
+  camera.position.set(player.x, player.y, player.z);
 }
 
-// === Loot & Buildings ===
-let loot = [], buildings = [];
-function spawnBuilding(x,z,color=0x888888){
-  let b = new THREE.Mesh(new THREE.BoxGeometry(20,20,20), new THREE.MeshPhongMaterial({color}));
-  b.position.set(x,10,z);
-  scene.add(b); buildings.push(b);
-}
-function spawnLoot(x,z,type){
-  let l = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshPhongMaterial({color:0xffd700}));
-  l.position.set(x,0.5,z); scene.add(l);
-  loot.push({mesh:l,type});
-}
-for(let i=-100;i<100;i+=40){ spawnBuilding(i,0,0xff4444); spawnLoot(i,5,"water"); }
-
-// === Zombies ===
-let zombies=[];
-function spawnZombie(x,z){
-  let zmesh = new THREE.Mesh(new THREE.BoxGeometry(1.5,2,1.5), new THREE.MeshPhongMaterial({color:0x00ff00}));
-  zmesh.position.set(x,1,z); scene.add(zmesh);
-  zombies.push({mesh:zmesh,x,z});
-}
-for(let i=-50;i<50;i+=20){ spawnZombie(i,20); }
-
-// === WebSocket Multiplayer ===
+// ===== WEBSOCKET (Render Safe) =====
 const ws = new WebSocket(
   window.location.protocol === "https:"
     ? "wss://" + window.location.host
     : "ws://" + window.location.host
 );
 
-// === Chat ===
-document.getElementById("chatInput").addEventListener("keypress",e=>{
-  if(e.key==="Enter" && ws.readyState===WebSocket.OPEN){
-    ws.send(JSON.stringify({name:"Player",message:e.target.value}));
-    e.target.value="";
-  }
-});
+ws.onopen = () => console.log("Connected to server");
 
-// === Render Loop ===
-function animate(){
+// ===== LOOP =====
+function animate() {
   requestAnimationFrame(animate);
-  movePlayer();
-  renderer.render(scene,camera);
+
+  if (controls.isLocked) {
+    movePlayer();
+  }
+
+  renderer.render(scene, camera);
 }
+
 animate();
 
-
-
-
-
+// ===== RESIZE FIX =====
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
