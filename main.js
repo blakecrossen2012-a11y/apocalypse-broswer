@@ -1,5 +1,6 @@
-import * as THREE from "/node_modules/three/build/three.module.js";
-import { PointerLockControls } from "/node_modules/three/examples/jsm/controls/PointerLockControls.js";
+// IMPORTANT: removed leading slashes
+import * as THREE from "./node_modules/three/build/three.module.js";
+import { PointerLockControls } from "./node_modules/three/examples/jsm/controls/PointerLockControls.js";
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb);
