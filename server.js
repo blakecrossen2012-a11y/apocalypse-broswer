@@ -8,8 +8,9 @@ const wss = new WebSocket.Server({ server });
 
 const PORT = process.env.PORT || 8080;
 
-app.use(express.static("public"));
+app.use(express.static(__dirname));
 app.use("/node_modules", express.static("node_modules"));
+
 
 wss.on("connection", (ws) => {
   console.log("Player connected");
@@ -18,3 +19,4 @@ wss.on("connection", (ws) => {
 server.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
+
