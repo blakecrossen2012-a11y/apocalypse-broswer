@@ -1,0 +1,11 @@
+{
+  "name": "apocalypse-browser",
+  "version": "1.12.2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}
