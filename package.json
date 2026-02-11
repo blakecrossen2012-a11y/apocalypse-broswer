@@ -6,7 +6,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "ws": "^8.13.0",
-    "three": "^0.161.0"
+    "ws": "^8.15.0"
   }
 }
+
+
