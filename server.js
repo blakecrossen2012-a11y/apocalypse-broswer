@@ -1,7 +1,8 @@
 const WebSocket = require('ws');
 const PORT = process.env.PORT || 8081;
 
-const wss = new WebSocket.Server({ port: PORT });
+const ws = new WebSocket("wss://apocalypse-broswer.onrender.com");
+
 
 wss.on('connection', ws => {
     console.log('Player connected');
@@ -16,4 +17,5 @@ wss.on('connection', ws => {
 });
 
 console.log(`WebSocket server running on port ${PORT}`);
+
 
