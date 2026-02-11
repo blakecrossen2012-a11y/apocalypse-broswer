@@ -2,51 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Apocalypse Browser 1.12.2</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Apocalypse Browser</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body { margin: 0; overflow: hidden; background: #7ec850; }
+        canvas { display: block; }
+        #chat { position: absolute; bottom: 10px; left: 10px; width: 300px; height: 200px; overflow-y: auto; background: rgba(0,0,0,0.5); color: white; padding: 5px; font-family: monospace;}
+        #input { position: absolute; bottom: 0; left: 10px; width: 300px; }
+    </style>
 </head>
 <body>
+    <div id="chat"></div>
+    <input type="text" id="input" placeholder="Type message and press Enter"/>
     <canvas id="gameCanvas"></canvas>
-    
-    <!-- HUD -->
-    <div id="hud">
-        <div id="health">Health: 100</div>
-        <div id="food">Food: 100</div>
-        <div id="water">Water: 100</div>
-        <div id="hotbar"></div>
-        <div id="chatContainer">
-            <div id="chatLog"></div>
-            <input id="chatInput" placeholder="Type message..." />
-        </div>
-        <div id="mapOverview" hidden></div>
-    </div>
-
-    <script src="main.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Apocalypse Browser 1.12.2</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <canvas id="gameCanvas"></canvas>
-    
-    <!-- HUD -->
-    <div id="hud">
-        <div id="health">Health: 100</div>
-        <div id="food">Food: 100</div>
-        <div id="water">Water: 100</div>
-        <div id="hotbar"></div>
-        <div id="chatContainer">
-            <div id="chatLog"></div>
-            <input id="chatInput" placeholder="Type message..." />
-        </div>
-        <div id="mapOverview" hidden></div>
-    </div>
-
     <script src="main.js"></script>
 </body>
 </html>
